@@ -53,15 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     noteCard.appendChild(buttonsContainer);
 
-    // Add mousedown event listener to the edit button
-    editButton.addEventListener('mousedown', function (event) {
+    // Add click event listeners to the buttons
+    editButton.addEventListener('click', function (event) {
       event.stopPropagation(); // Prevent the click event from reaching the note card's click event
       openEditModal(title, description, noteCard);
-    });
-
-    // Add click event listeners to the buttons
-    editButton.addEventListener('click', function () {
-      // This click event is now only triggered after the mousedown event
     });
 
     deleteButton.addEventListener('click', function () {
@@ -77,17 +72,21 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.value = title;
     descriptionInput.value = description;
     editTarget = targetNoteCard; // Set the edit target to the clicked note card
-
-    // Remove previous event listeners from submitBtn
-    submitBtn.removeEventListener('click', handleAddOrUpdate);
-
-    // Add a new event listener to handle both adding and updating
-    submitBtn.addEventListener('click', handleAddOrUpdate);
-    loadNotesFromLocalStorage()
   }
 
-  // Handle the add or update action
-  function handleAddOrUpdate() {
+  closeModalBtn.addEventListener('click', function () {
+    modal.style.display = 'none';
+    editTarget = null; // Reset edit target when closing the modal
+  });
+
+  window.addEventListener('click', function (event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+      editTarget = null; // Reset edit target when closing the modal
+    }
+  });
+
+  submitBtn.addEventListener('click', function () {
     const newTitle = titleInput.value;
     const newDescription = descriptionInput.value;
 
@@ -109,38 +108,16 @@ document.addEventListener('DOMContentLoaded', function () {
       modalForm.reset();
       // Close the modal
       modal.style.display = 'none';
-
-      // Remove and re-add the event listener to avoid multiple bindings
-      submitBtn.removeEventListener('click', handleAddOrUpdate);
-      submitBtn.addEventListener('click', handleAddOrUpdate);
     } else {
       alert('Please enter both title and description.');
     }
-  }
+  });
 
   // Delete the note card
   function deleteNoteCard(noteCard) {
     notesContainer.removeChild(noteCard);
     saveNotesToLocalStorage();
   }
-
-  openModalBtn.addEventListener('click', function () {
-    modal.style.display = 'block';
-  });
-
-  closeModalBtn.addEventListener('click', function () {
-    modal.style.display = 'none';
-    editTarget = null; // Reset edit target when closing the modal
-  });
-
-  window.addEventListener('click', function (event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-      editTarget = null; // Reset edit target when closing the modal
-    }
-  });
-
-  submitBtn.addEventListener('click', handleAddOrUpdate);
 
   // Search functionality
   searchInput.addEventListener('input', function () {
