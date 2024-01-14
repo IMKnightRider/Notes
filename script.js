@@ -53,22 +53,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     noteCard.appendChild(buttonsContainer);
 
+    // Add mousedown event listener to the note card
+    noteCard.addEventListener('mousedown', function (event) {
+      if (event.button === 0) {
+        // Left mouse button clicked, open the edit modal
+        openEditModal(title, description, noteCard);
+      }
+    });
+
     // Add click event listeners to the buttons
     editButton.addEventListener('click', function (event) {
-      event.stopPropagation(); // Prevent the click event from reaching the note card's click event
+      event.stopPropagation(); // Prevent the click event from reaching the note card's mousedown event
       openEditModal(title, description, noteCard);
     });
 
     deleteButton.addEventListener('click', function () {
       deleteNoteCard(noteCard);
-    });
-
-    // Handle click event on the note card itself
-    noteCard.addEventListener('click', function (event) {
-      if (!event.target.closest('.buttons-container')) {
-        // Open the edit modal when clicking on the note card (excluding buttons)
-        openEditModal(title, description, noteCard);
-      }
     });
 
     notesContainer.appendChild(noteCard);
