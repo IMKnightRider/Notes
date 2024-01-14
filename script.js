@@ -63,6 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteNoteCard(noteCard);
     });
 
+    noteCard.addEventListener('click', function () {
+      openEditModal(title, description, noteCard);
+    });
+
     notesContainer.appendChild(noteCard);
   }
 
@@ -72,6 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.value = title;
     descriptionInput.value = description;
     editTarget = targetNoteCard; // Set the edit target to the clicked note card
+
+    // Remove previous event listeners from submitBtn
+    submitBtn.removeEventListener('click', handleAddOrUpdate);
+
+    // Add a new event listener to handle both adding and updating
+    submitBtn.addEventListener('click', handleAddOrUpdate);
   }
 
   closeModalBtn.addEventListener('click', function () {
@@ -86,7 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  submitBtn.addEventListener('click', function () {
+  // Handle the add or update action
+  function handleAddOrUpdate() {
     const newTitle = titleInput.value;
     const newDescription = descriptionInput.value;
 
@@ -108,10 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
       modalForm.reset();
       // Close the modal
       modal.style.display = 'none';
+
+      // Remove and re-add the event listener to avoid multiple bindings
+      submitBtn.removeEventListener('click', handleAddOrUpdate);
+      submitBtn.addEventListener('click', handleAddOrUpdate);
     } else {
       alert('Please enter both title and description.');
     }
-  });
+  }
 
   // Delete the note card
   function deleteNoteCard(noteCard) {
