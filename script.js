@@ -63,6 +63,12 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteButton.addEventListener('click', function () {
         deleteNoteCard(noteCard);
       });
+    } else {
+      // For non-mobile devices, add context menu for right-click
+      noteCard.addEventListener('contextmenu', function (event) {
+        event.preventDefault();
+        showContextMenu(event, noteCard);
+      });
     }
     
     notesContainer.appendChild(noteCard);
@@ -85,6 +91,51 @@ document.addEventListener('DOMContentLoaded', function () {
   function deleteNoteCard(noteCard) {
     notesContainer.removeChild(noteCard);
     saveNotesToLocalStorage();
+  }
+
+  function showContextMenu(event, targetNoteCard) {
+    const contextMenu = document.createElement('div');
+    contextMenu.classList.add('context-menu');
+    contextMenu.innerHTML = '<div class="menu-item" id="edit">Edit</div><div class="menu-item" id="delete">Delete</div>';
+    document.body.appendChild(contextMenu);
+
+    // Position the context menu
+    const { clientX, clientY } = event;
+    contextMenu.style.left = `${clientX}px`;
+    contextMenu.style.top = `${clientY}px`;
+
+    // Handle menu item clicks
+    contextMenu.addEventListener('click', function (menuEvent) {
+      const menuItemId = menuEvent.target.id;
+
+      if (menuItemId === 'edit') {
+        // Edit note - Open edit modal
+        openEditModal(targetNoteCard.querySelector('h2').innerText, targetNoteCard.querySelector('p').innerText);
+      } else if (menuItemId === 'delete') {
+        // Delete note - Ask for confirmation
+        const isConfirmed = window.confirm('Are you sure you want to delete this note?');
+
+        if (isConfirmed) {
+          // Delete the note
+          notesContainer.removeChild(targetNoteCard);
+          // Save notes to local storage after deletion
+          saveNotesToLocalStorage();
+        }
+      }
+
+      // Remove the context menu
+      document.body.removeChild(contextMenu);
+    });
+
+    // Close the context menu on any click outside the menu
+    const closeContextMenu = function (clickEvent) {
+      if (!contextMenu.contains(clickEvent.target)) {
+        document.body.removeChild(contextMenu);
+        window.removeEventListener('click', closeContextMenu);
+      }
+    };
+
+    window.addEventListener('click', closeContextMenu);
   }
 
   openModalBtn.addEventListener('click', function () {
