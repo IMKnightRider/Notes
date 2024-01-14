@@ -54,9 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
     noteCard.appendChild(buttonsContainer);
 
     // Add click event listeners to the buttons
-    editButton.addEventListener('click', function () {
-      openEditModal(title, description, noteCard);
-    });
+    editButton.addEventListener('mousedown', function (event) {
+    event.stopPropagation(); // Prevent the click event from reaching the note card's click event
+    openEditModal(title, description, noteCard);
+  });
+
 
     deleteButton.addEventListener('click', function () {
       deleteNoteCard(noteCard);
