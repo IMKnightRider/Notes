@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const notesContainer = document.getElementById('notesContainer');
   const searchInput = document.getElementById('search');
 
-  let editTarget = null; // Variable to store the note being edited
+  let editIndex = -1; // Variable to store the index of the note being edited
 
   // Load notes from local storage on page load
   function loadNotesFromLocalStorage() {
@@ -53,17 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     noteCard.appendChild(buttonsContainer);
 
-    // Add mousedown event listener to the note card
-    noteCard.addEventListener('mousedown', function (event) {
-      if (event.button === 0) {
-        // Left mouse button clicked, open the edit modal
-        openEditModal(title, description);
-      }
-    });
-
     // Add click event listeners to the buttons
-    editButton.addEventListener('click', function (event) {
-      event.stopPropagation(); // Prevent the click event from reaching the note card's mousedown event
+    editButton.addEventListener('click', function () {
       openEditModal(title, description);
     });
 
@@ -79,18 +70,28 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.style.display = 'block';
     titleInput.value = title;
     descriptionInput.value = description;
-    editTarget = { title, description }; // Set the edit target to the clicked note card data
+
+    // Find the index of the note being edited
+    const noteCards = document.querySelectorAll('.card');
+    noteCards.forEach((card, index) => {
+      const cardTitle = card.querySelector('h2').innerText;
+      const cardDescription = card.querySelector('p').innerText;
+
+      if (cardTitle === title && cardDescription === description) {
+        editIndex = index;
+      }
+    });
   }
 
   closeModalBtn.addEventListener('click', function () {
     modal.style.display = 'none';
-    editTarget = null; // Reset edit target when closing the modal
+    editIndex = -1; // Reset edit index when closing the modal
   });
 
   window.addEventListener('click', function (event) {
     if (event.target === modal) {
       modal.style.display = 'none';
-      editTarget = null; // Reset edit target when closing the modal
+      editIndex = -1; // Reset edit index when closing the modal
     }
   });
 
@@ -99,24 +100,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const newDescription = descriptionInput.value;
 
     if (newTitle && newDescription) {
-      if (editTarget) {
-        // If there's an edit target, update the existing note
-        editTarget.title = newTitle;
-        editTarget.description = newDescription;
-
-        // Find the corresponding note card and update its content
-        const noteCards = document.querySelectorAll('.card');
-        noteCards.forEach((card) => {
-          const cardTitle = card.querySelector('h2').innerText;
-          const cardDescription = card.querySelector('p').innerText;
-
-          if (cardTitle === editTarget.title && cardDescription === editTarget.description) {
-            card.querySelector('h2').innerText = newTitle;
-            card.querySelector('p').innerText = newDescription;
-          }
-        });
-
-        editTarget = null; // Reset edit target after editing
+      if (editIndex !== -1) {
+        // If there's an edit index, update the existing note
+        const noteCard = document.querySelectorAll('.card')[editIndex];
+        noteCard.querySelector('h2').innerText = newTitle;
+        noteCard.querySelector('p').innerText = newDescription;
+        editIndex = -1; // Reset edit index after editing
       } else {
         // Otherwise, create a new note card
         createNoteCard(newTitle, newDescription);
@@ -156,3 +145,4 @@ document.addEventListener('DOMContentLoaded', function () {
   // Load notes from local storage on page load
   loadNotesFromLocalStorage();
 });
+``
