@@ -84,9 +84,19 @@ nav a:hover{
   
   }
 
-.edit-btn,
-.delete-btn {
+.edit-btn {
   background-color: #4CAF50; /* Green color */
+  color: #fff; /* White text color */
+  padding: 8px 16px; /* Padding */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  font-size: 14px; /* Font size */
+    margin: 5px;
+}
+
+.delete-btn {
+  background-color: #D24545; /* Green color */
   color: #fff; /* White text color */
   padding: 8px 16px; /* Padding */
   border: none; /* No border */
