@@ -9,10 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const notesContainer = document.getElementById('notesContainer');
   const searchInput = document.getElementById('search');
 
-  let editIndex = -1; // Variable to store the index of the note being edited
+  let editTarget = null; // Variable to store the note being edited
 
   // Load notes from local storage on page load
   function loadNotesFromLocalStorage() {
+    notesContainer.innerHTML = ''; // Clear the existing content
     const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
     savedNotes.forEach((note) => {
       createNoteCard(note.title, note.description);
@@ -70,28 +71,18 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.style.display = 'block';
     titleInput.value = title;
     descriptionInput.value = description;
-
-    // Find the index of the note being edited
-    const noteCards = document.querySelectorAll('.card');
-    noteCards.forEach((card, index) => {
-      const cardTitle = card.querySelector('h2').innerText;
-      const cardDescription = card.querySelector('p').innerText;
-
-      if (cardTitle === title && cardDescription === description) {
-        editIndex = index;
-      }
-    });
+    editTarget = { title, description }; // Set the edit target to the clicked note card data
   }
 
   closeModalBtn.addEventListener('click', function () {
     modal.style.display = 'none';
-    editIndex = -1; // Reset edit index when closing the modal
+    editTarget = null; // Reset edit target when closing the modal
   });
 
   window.addEventListener('click', function (event) {
     if (event.target === modal) {
       modal.style.display = 'none';
-      editIndex = -1; // Reset edit index when closing the modal
+      editTarget = null; // Reset edit target when closing the modal
     }
   });
 
@@ -100,19 +91,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const newDescription = descriptionInput.value;
 
     if (newTitle && newDescription) {
-      if (editIndex !== -1) {
-        // If there's an edit index, update the existing note
-        const noteCard = document.querySelectorAll('.card')[editIndex];
-        noteCard.querySelector('h2').innerText = newTitle;
-        noteCard.querySelector('p').innerText = newDescription;
-        editIndex = -1; // Reset edit index after editing
+      if (editTarget) {
+        // If there's an edit target, update the existing note
+        editTarget.title = newTitle;
+        editTarget.description = newDescription;
+
+        // Save notes to local storage
+        saveNotesToLocalStorage();
+
+        // Load all content from local storage after editing
+        loadNotesFromLocalStorage();
+
+        editTarget = null; // Reset edit target after editing
       } else {
         // Otherwise, create a new note card
         createNoteCard(newTitle, newDescription);
-      }
 
-      // Save notes to local storage
-      saveNotesToLocalStorage();
+        // Save notes to local storage
+        saveNotesToLocalStorage();
+      }
 
       // Clear the form after adding/editing a note
       modalForm.reset();
@@ -145,4 +142,3 @@ document.addEventListener('DOMContentLoaded', function () {
   // Load notes from local storage on page load
   loadNotesFromLocalStorage();
 });
-``
