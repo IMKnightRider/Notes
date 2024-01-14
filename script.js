@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add a new event listener to handle both adding and updating
     submitBtn.addEventListener('click', handleAddOrUpdate);
-    loadNotesFromStorage()
+    loadNotesFromLocalStorage()
   }
 
   // Handle the add or update action
