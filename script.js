@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Load notes from local storage on page load
   function loadNotesFromLocalStorage() {
-    notesContainer.innerHTML = ''; // Clear the existing content
     const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
     savedNotes.forEach((note) => {
       createNoteCard(note.title, note.description);
@@ -56,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add click event listeners to the buttons
     editButton.addEventListener('click', function () {
-      openEditModal(title, description);
+      openEditModal(title, description, noteCard);
     });
 
     deleteButton.addEventListener('click', function () {
@@ -67,12 +66,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Open the edit modal with existing data
-  function openEditModal(title, description) {
+  function openEditModal(title, description, targetNoteCard) {
     modal.style.display = 'block';
     titleInput.value = title;
     descriptionInput.value = description;
-    editTarget = { title, description }; // Set the edit target to the clicked note card data
+    editTarget = targetNoteCard; // Set the edit target to the clicked note card
   }
+
+  // Delete the note card
+  function deleteNoteCard(noteCard) {
+    notesContainer.removeChild(noteCard);
+    saveNotesToLocalStorage();
+  }
+
+  openModalBtn.addEventListener('click', function () {
+    modal.style.display = 'block';
+  });
 
   closeModalBtn.addEventListener('click', function () {
     modal.style.display = 'none';
@@ -87,29 +96,22 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   submitBtn.addEventListener('click', function () {
-    const newTitle = titleInput.value;
-    const newDescription = descriptionInput.value;
+    const title = titleInput.value;
+    const description = descriptionInput.value;
 
-    if (newTitle && newDescription) {
+    if (title && description) {
       if (editTarget) {
         // If there's an edit target, update the existing note
-        editTarget.title = newTitle;
-        editTarget.description = newDescription;
-
-        // Save notes to local storage
-        saveNotesToLocalStorage();
-
-        // Load all content from local storage after editing
-        loadNotesFromLocalStorage();
-
+        editTarget.querySelector('h2').innerText = title;
+        editTarget.querySelector('p').innerText = description;
         editTarget = null; // Reset edit target after editing
       } else {
         // Otherwise, create a new note card
-        createNoteCard(newTitle, newDescription);
-
-        // Save notes to local storage
-        saveNotesToLocalStorage();
+        createNoteCard(title, description);
       }
+
+      // Save notes to local storage
+      saveNotesToLocalStorage();
 
       // Clear the form after adding/editing a note
       modalForm.reset();
@@ -119,12 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
       alert('Please enter both title and description.');
     }
   });
-
-  // Delete the note card
-  function deleteNoteCard(noteCard) {
-    notesContainer.removeChild(noteCard);
-    saveNotesToLocalStorage();
-  }
 
   // Search functionality
   searchInput.addEventListener('input', function () {
