@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded', function () {
     noteCard.addEventListener('mousedown', function (event) {
       if (event.button === 0) {
         // Left mouse button clicked, open the edit modal
-        openEditModal(title, description, noteCard);
+        openEditModal(title, description);
       }
     });
 
     // Add click event listeners to the buttons
     editButton.addEventListener('click', function (event) {
       event.stopPropagation(); // Prevent the click event from reaching the note card's mousedown event
-      openEditModal(title, description, noteCard);
+      openEditModal(title, description);
     });
 
     deleteButton.addEventListener('click', function () {
@@ -75,11 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Open the edit modal with existing data
-  function openEditModal(title, description, targetNoteCard) {
+  function openEditModal(title, description) {
     modal.style.display = 'block';
     titleInput.value = title;
     descriptionInput.value = description;
-    editTarget = targetNoteCard; // Set the edit target to the clicked note card
+    editTarget = { title, description }; // Set the edit target to the clicked note card data
   }
 
   closeModalBtn.addEventListener('click', function () {
@@ -101,8 +101,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (newTitle && newDescription) {
       if (editTarget) {
         // If there's an edit target, update the existing note
-        editTarget.querySelector('h2').innerText = newTitle;
-        editTarget.querySelector('p').innerText = newDescription;
+        editTarget.title = newTitle;
+        editTarget.description = newDescription;
+
+        // Find the corresponding note card and update its content
+        const noteCards = document.querySelectorAll('.card');
+        noteCards.forEach((card) => {
+          const cardTitle = card.querySelector('h2').innerText;
+          const cardDescription = card.querySelector('p').innerText;
+
+          if (cardTitle === editTarget.title && cardDescription === editTarget.description) {
+            card.querySelector('h2').innerText = newTitle;
+            card.querySelector('p').innerText = newDescription;
+          }
+        });
+
         editTarget = null; // Reset edit target after editing
       } else {
         // Otherwise, create a new note card
