@@ -53,12 +53,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     noteCard.appendChild(buttonsContainer);
 
-    // Add click event listeners to the buttons
+    // Add mousedown event listener to the edit button
     editButton.addEventListener('mousedown', function (event) {
-    event.stopPropagation(); // Prevent the click event from reaching the note card's click event
-    openEditModal(title, description, noteCard);
-  });
+      event.stopPropagation(); // Prevent the click event from reaching the note card's click event
+      openEditModal(title, description, noteCard);
+    });
 
+    // Add click event listeners to the buttons
+    editButton.addEventListener('click', function () {
+      // This click event is now only triggered after the mousedown event
+    });
 
     deleteButton.addEventListener('click', function () {
       deleteNoteCard(noteCard);
@@ -73,7 +77,44 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.value = title;
     descriptionInput.value = description;
     editTarget = targetNoteCard; // Set the edit target to the clicked note card
-    saveNotesToLocalStorage();
+
+    // Remove previous event listeners from submitBtn
+    submitBtn.removeEventListener('click', handleAddOrUpdate);
+
+    // Add a new event listener to handle both adding and updating
+    submitBtn.addEventListener('click', handleAddOrUpdate);
+  }
+
+  // Handle the add or update action
+  function handleAddOrUpdate() {
+    const newTitle = titleInput.value;
+    const newDescription = descriptionInput.value;
+
+    if (newTitle && newDescription) {
+      if (editTarget) {
+        // If there's an edit target, update the existing note
+        editTarget.querySelector('h2').innerText = newTitle;
+        editTarget.querySelector('p').innerText = newDescription;
+        editTarget = null; // Reset edit target after editing
+      } else {
+        // Otherwise, create a new note card
+        createNoteCard(newTitle, newDescription);
+      }
+
+      // Save notes to local storage
+      saveNotesToLocalStorage();
+
+      // Clear the form after adding/editing a note
+      modalForm.reset();
+      // Close the modal
+      modal.style.display = 'none';
+
+      // Remove and re-add the event listener to avoid multiple bindings
+      submitBtn.removeEventListener('click', handleAddOrUpdate);
+      submitBtn.addEventListener('click', handleAddOrUpdate);
+    } else {
+      alert('Please enter both title and description.');
+    }
   }
 
   // Delete the note card
@@ -98,32 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  submitBtn.addEventListener('click', function () {
-    const title = titleInput.value;
-    const description = descriptionInput.value;
-
-    if (title && description) {
-      if (editTarget) {
-        // If there's an edit target, update the existing note
-        editTarget.querySelector('h2').innerText = title;
-        editTarget.querySelector('p').innerText = description;
-        editTarget = null; // Reset edit target after editing
-      } else {
-        // Otherwise, create a new note card
-        createNoteCard(title, description);
-      }
-
-      // Save notes to local storage
-      saveNotesToLocalStorage();
-
-      // Clear the form after adding/editing a note
-      modalForm.reset();
-      // Close the modal
-      modal.style.display = 'none';
-    } else {
-      alert('Please enter both title and description.');
-    }
-  });
+  submitBtn.addEventListener('click', handleAddOrUpdate);
 
   // Search functionality
   searchInput.addEventListener('input', function () {
