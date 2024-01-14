@@ -15,9 +15,12 @@ document.addEventListener('DOMContentLoaded', function () {
   function loadNotesFromLocalStorage() {
     let child = notesContainer.lastElementChild;
     while (child) {
+        if (child == document.getElementById("do")) {
+          continue; 
+        } else {
         notesContainer.removeChild(child);
         child = notesContainer.lastElementChild;
-    }
+        }}
     const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
     savedNotes.forEach((note) => {
       createNoteCard(note.title, note.description);
@@ -110,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         editTarget.querySelector('h2').innerText = title;
         editTarget.querySelector('p').innerText = description;
         editTarget = null; // Reset edit target after editing
-        loadNotesFromLocalStorage ()
+        
       } else {
         // Otherwise, create a new note card
         createNoteCard(title, description);
@@ -123,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
       modalForm.reset();
       // Close the modal
       modal.style.display = 'none';
+      loadNotesFromLocalStorage ()
     } else {
       alert('Please enter both title and description.');
     }
