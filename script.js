@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let child = notesContainer.lastElementChild;
     while (child) {
         if (child == document.getElementById("do")) {
-          continue; 
+          break;
         } else {
         notesContainer.removeChild(child);
         child = notesContainer.lastElementChild;
