@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.value = title;
     descriptionInput.value = description;
     editTarget = targetNoteCard; // Set the edit target to the clicked note card
+    saveNotesToLocalStorage();
   }
 
   // Delete the note card
