@@ -83,6 +83,19 @@ nav a:hover{
     box-shadow: 255px 255px 255px rgba(0, 0, 0, 1);
   
   }
+
+.edit-btn,
+.delete-btn {
+  background-color: #4CAF50; /* Green color */
+  color: #fff; /* White text color */
+  padding: 8px 16px; /* Padding */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  font-size: 14px; /* Font size */
+    margin: 5px;
+}
+
   
   body {
     font-family: Arial, sans-serif;
