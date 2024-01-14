@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Load notes from local storage on page load
   function loadNotesFromLocalStorage() {
+    let child = notesContainer.lastElementChild;
+    while (child) {
+        notesContainer.removeChild(child);
+        child = notesContainer.lastElementChild;
+    }
     const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
     savedNotes.forEach((note) => {
       createNoteCard(note.title, note.description);
@@ -105,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
         editTarget.querySelector('h2').innerText = title;
         editTarget.querySelector('p').innerText = description;
         editTarget = null; // Reset edit target after editing
+        loadNotesFromLocalStorage ()
       } else {
         // Otherwise, create a new note card
         createNoteCard(title, description);
